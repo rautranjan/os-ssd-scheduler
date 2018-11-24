@@ -563,6 +563,18 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 	
 	unsigned long color = node->__rb_parent_color;
 
+	//generating random integer
+
+	static unsigned int rand = 0xACE1U; /* Any nonzero start state will work. */
+
+	/*get the random in end-range.*/
+	rand += 0x3AD;
+	rand %= 1000;
+
+	/*get the random in start-range.*/
+	while(rand < 0){
+		rand = rand + 1000;
+	}
 
 
 
@@ -570,18 +582,28 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 		return NULL;
 
 	/*
-	 * If we have a right-hand child, go down and then left as far
-	 * as we can.
+	 * If we have a right-hand child, go down and then left or right as far
+	 * as we can until limit.
 	 */
 
 	if (node->rb_right) {
 		node = node->rb_right;
+		int i=0;
 		if(color == RB_BLACK){
-			while (node->rb_left)
-				node=node->rb_left;
+			while (node->rb_left){
+				if(i < rand){
+					node=node->rb_left;
+					i++;
+				}
+			}
 		}else{
-			while (node->rb_right)
+			while (node->rb_right){
 				node=node->rb_right;
+				if(i < rand){
+					node=node->rb_right;
+					i++;
+				}
+			}
 		}
 		return (struct rb_node *)node;
 	}
