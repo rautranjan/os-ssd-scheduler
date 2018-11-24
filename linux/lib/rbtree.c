@@ -569,11 +569,11 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 
 	/*get the random in end-range.*/
 	rand += 0x3AD;
-	rand %= 1000;
+	rand %= 100;
 
 	/*get the random in start-range.*/
 	while(rand < 0){
-		rand = rand + 1000;
+		rand = rand + 100;
 	}
 
 
@@ -582,21 +582,31 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 		return NULL;
 
 	/*
-	 * If we have a right-hand child, go down and then left or right as far
+	 * If we have a right-hand child, go down and then left as far
 	 * as we can until limit.
 	 */
 
 	if (node->rb_right) {
 		node = node->rb_right;
 		int i=0;
-		if(color == RB_BLACK){
+
+		/*while (node->rb_right){
+			node=node->rb_right;
+			if(i < rand){
+				node=node->rb_right;
+				i++;
+			}
+		}
+
+		i=0;*/
+		//if(color == RB_BLACK){
 			while (node->rb_left){
 				if(i < rand){
 					node=node->rb_left;
 					i++;
 				}
 			}
-		}else{
+		/*}else{
 			while (node->rb_right){
 				node=node->rb_right;
 				if(i < rand){
@@ -604,7 +614,7 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 					i++;
 				}
 			}
-		}
+		}*/
 		return (struct rb_node *)node;
 	}
 
