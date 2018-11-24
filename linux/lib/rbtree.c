@@ -559,58 +559,45 @@ EXPORT_SYMBOL(rb_next);
 
 struct rb_node *rb_next_read(const struct rb_node *node)
 {
-
-	//SBIOS
-
-	struct rb_node *parent, *root, *temp;
+	struct rb_node *parent;
 	
-	root=node;
+	unsigned long color = node->__rb_parent_color;
 
-	//finding root of rbtree
 
-	while ((parent = rb_parent(root))){
-		temp = root;
-		root = parent;
-	}
 
-	/* if temp is left node of root, then go to rightmost child of root
-	 * else return leftmost chid of root
-	 * else there is no left or right child root , hence return root
+
+	if (RB_EMPTY_NODE(node))
+		return NULL;
+
+	/*
+	 * If we have a right-hand child, go down and then left as far
+	 * as we can.
 	 */
 
-	if((temp == root->rb_left)){
-
-		struct rb_node *rightmost;
-
-		rightmost = root;
-
-		while (rightmost->rb_right){
-
-			rightmost = rightmost->rb_right;
-
+	if (node->rb_right) {
+		node = node->rb_right;
+		if(color == RB_BLACK){
+			while (node->rb_left)
+				node=node->rb_left;
+		}else{
+			while (node->rb_right)
+				node=node->rb_right;
 		}
+		return (struct rb_node *)node;
+	}
 
-		return (struct rb_node *)rightmost;
+	/*
+	 * No right-hand children. Everything down and left is smaller than us,
+	 * so any 'next' node must be in the general direction of our parent.
+	 * Go up the tree; any time the ancestor is a right-hand child of its
+	 * parent, keep going up. First time it's a left-hand child of its
+	 * parent, said parent is our 'next' node.
+	 */
+	while ((parent = rb_parent(node)) && node == parent->rb_right)
+		node = parent;
 
-	}else if((temp == root->rb_right)){
-
-		struct rb_node *leftmost;
-
-		leftmost = root;
-
-		while (leftmost->rb_left){
-
-			leftmost = leftmost->rb_left;
-
-		}
-
-		return (struct rb_node *)leftmost;
-
-	}else
-		return (struct rb_node *)root;
-
-
-	return NULL;
+	return parent;
+	
 
 }
 EXPORT_SYMBOL(rb_next_read);
