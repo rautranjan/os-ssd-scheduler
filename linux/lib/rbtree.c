@@ -560,26 +560,24 @@ EXPORT_SYMBOL(rb_next);
 struct rb_node *rb_next_read(const struct rb_node *node)
 {
 	struct rb_node *parent;
-	
-	unsigned long color = node->__rb_parent_color;
 
+	if (RB_EMPTY_NODE(node))
+		return NULL;
+	
 	//generating random integer
 
 	static unsigned int rand = 0xACE1U; /* Any nonzero start state will work. */
 
 	/*get the random in end-range.*/
 	rand += 0x3AD;
-	rand %= 100;
+	rand %= 1000;
 
 	/*get the random in start-range.*/
-	while(rand < 0){
-		rand = rand + 100;
+	while(rand < 1){
+		rand = rand + 999;
 	}
 
 
-
-	if (RB_EMPTY_NODE(node))
-		return NULL;
 
 	/*
 	 * If we have a right-hand child, go down and then left as far
@@ -587,34 +585,13 @@ struct rb_node *rb_next_read(const struct rb_node *node)
 	 */
 
 	if (node->rb_right) {
-		node = node->rb_right;
-		int i=0;
-
-		/*while (node->rb_right){
-			node=node->rb_right;
+		int i = 0;
+		while (node->rb_right){
 			if(i < rand){
 				node=node->rb_right;
 				i++;
 			}
 		}
-
-		i=0;*/
-		//if(color == RB_BLACK){
-			while (node->rb_left){
-				if(i < rand){
-					node=node->rb_left;
-					i++;
-				}
-			}
-		/*}else{
-			while (node->rb_right){
-				node=node->rb_right;
-				if(i < rand){
-					node=node->rb_right;
-					i++;
-				}
-			}
-		}*/
 		return (struct rb_node *)node;
 	}
 
