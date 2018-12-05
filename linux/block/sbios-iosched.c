@@ -1,8 +1,7 @@
 /*
  *  sbios i/o scheduler.
  *
- *  Copyright (C) 2002 Jens Axboe <axboe@kernel.dk>
- */
+  */
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
@@ -14,9 +13,6 @@
 #include <linux/compiler.h>
 #include <linux/rbtree.h>
 
-/*
- * See Documentation/block/sbios-iosched.txt
- */
 static const int read_expire = HZ / 2;  /* max time before a read is submitted. */
 static const int write_expire = 5 * HZ; /* ditto for writes, these limits are SOFT! */
 static const int writes_starved = 2;    /* max times reads can starve a write */
@@ -563,6 +559,6 @@ static void __exit sbios_exit(void)
 module_init(sbios_init);
 module_exit(sbios_exit);
 
-MODULE_AUTHOR("Jens Axboe");
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("sbios IO scheduler");
+MODULE_AUTHOR("Triple Thread");
+MODULE_LICENSE("UCD");
+MODULE_DESCRIPTION("SSD Based Block IO scheduler");
